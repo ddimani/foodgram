@@ -229,4 +229,3 @@ class ShoppingCart(FavoriteShoppingCart):
             f'Рецепт {self.recipe.name} в списке '
             f'покупок пользователя: {self.user.username}'
         )
-
