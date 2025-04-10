@@ -1,6 +1,8 @@
-venv
 .git
-db.sqlite3
-.idea
-vscode
 .env
+.env.example
+.gitignore
+.dockerignore
+venv/
+.venv
+media/
