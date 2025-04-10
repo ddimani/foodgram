@@ -6,7 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from core.constants import (
     ERROR_INGREDIENTS,
     ERROR_ME_FOLLOW,
-    ERROR_MESSAGE_DUBLICATE_INGREDIENTS,
+    ERROR_MESSAGE_DUBLICATE_INGREDIEN,
     ERROR_MESSAGE_DUBLICATE_TAGS,
     ERROR_TAG,
     FOLLOWING_ERROR,
@@ -192,7 +192,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             ingredients_list = [
                 ingredient.get('name') for ingredient in ingredients]
             if len(ingredients_list) != len(set(ingredients_list)):
-                field_errors['ingredients'] = ERROR_MESSAGE_DUBLICATE_INGREDIENTS
+                field_errors['ingredients'] = ERROR_MESSAGE_DUBLICATE_INGREDIEN
 
         if field_errors:
             raise serializers.ValidationError(field_errors)

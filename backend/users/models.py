@@ -11,7 +11,7 @@ class User(AbstractUser):
     first_name = models.CharField(
         max_length=USERNAME_MAX_LENGTH,
         verbose_name='Имя',
-        help_text = 'Введите ваше имя'
+        help_text='Введите ваше имя'
     )
     last_name = models.CharField(
         max_length=USERNAME_MAX_LENGTH,

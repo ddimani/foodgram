@@ -46,7 +46,7 @@ def validator_amount(value):
 def validator_username(value):
     """Валидатор для проверки имени пользователя."""
     validator = RegexValidator(
-        regex=REGEX, message=MSG_FO_USERNAME,code=CODE_FO_USERNAME
+        regex=REGEX, message=MSG_FO_USERNAME, code=CODE_FO_USERNAME
     )
     try:
         validator(value)

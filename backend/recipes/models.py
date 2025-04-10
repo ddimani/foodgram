@@ -18,15 +18,16 @@ class Tag(models.Model):
 
     name = models.CharField(
         max_length=NAME_MAX_LENGTH,
-        unique = True,
-        verbose_name= 'Название тега',
+        unique=True,
+        verbose_name='Название тега',
         help_text='Введите название тега'
     )
     slug = models.SlugField(
-        max_length= SLUG_MAX_LENGTH,
-        unique= True,
+        max_length=SLUG_MAX_LENGTH,
+        unique=True,
         verbose_name='Идентификатор'
     )
+
     class Meta:
         ordering = ['name']
         verbose_name = 'тег'
@@ -49,6 +50,7 @@ class Ingredient(models.Model):
         verbose_name='Единица измерения',
         help_text='Введите единицу измерения'
     )
+
     class Meta:
         ordering = ('name', 'measurement_unit',)
         verbose_name = 'ингредиент'

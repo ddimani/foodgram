@@ -13,7 +13,6 @@ class Command(BaseCommand):
 
     help = 'Загрузка данных для ингредиентов'
 
-
     def handle(self, *args, **options):
         try:
             with open(

@@ -33,7 +33,7 @@ from recipes.models import (
     ShoppingCart,
     Tag,
 )
-from users.models import  Subscription, User
+from users.models import Subscription, User
 
 
 class UserViewSet(UserViewSet):
