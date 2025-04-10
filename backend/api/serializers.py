@@ -39,21 +39,21 @@ class AvatarSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор пользователя."""
 
-    subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
+            'email',
             'id',
             'username',
             'first_name',
             'last_name',
-            'email',
-            'subscribed',
+            'is_subscribed',
             'avatar'
         )
 
-    def get_subscribed(self, obj):
+    def get_is_subscribed(self, obj):
         """Метод проверки подписки."""
         request = self.context.get('request')
         return bool(
@@ -103,8 +103,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer()
     ingredients = serializers.SerializerMethodField()
-    favorite = serializers.SerializerMethodField()
-    shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
 
     class Meta:
@@ -114,14 +114,20 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'favorite',
-            'shopping_cart',
+            'is_favorited',
+            'is_in_shopping_cart',
             'name',
             'image',
             'text',
             'cooking_time'
         )
-        read_only_fields = ('author', 'name', 'image', 'text', 'cooking_time')
+        read_only_fields = (
+            'author',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        )
 
     def check_recipe(self, obj, model):
         """Метод проверки связи рецепта и пользователя."""
@@ -234,7 +240,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         all_ingredients = []
         for ingredient in ingredients:
             ingredient_recipe = IngredientRecipe(
-                name=ingredient.get('name'),
+                name=ingredient.get('id'),
                 recipe=recipe,
                 amount=ingredient.get('amount')
             )

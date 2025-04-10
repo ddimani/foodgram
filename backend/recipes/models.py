@@ -50,7 +50,7 @@ class Ingredient(models.Model):
         help_text='Введите единицу измерения'
     )
     class Meta:
-        ordering = ['name']
+        ordering = ('name', 'measurement_unit',)
         verbose_name = 'ингредиент'
         verbose_name_plural = 'Ингредиенты'
         constraints = (
@@ -60,7 +60,7 @@ class Ingredient(models.Model):
         )
 
     def __str__(self):
-        return self.name
+        return f'Ингредиент "{self.name}"'
 
 
 class Recipe(models.Model):
@@ -142,7 +142,7 @@ class Recipe(models.Model):
 class IngredientRecipe(models.Model):
     """Модель ингредиент в рецепте."""
 
-    ingredient = models.ForeignKey(
+    name = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
@@ -160,20 +160,21 @@ class IngredientRecipe(models.Model):
     )
 
     class Meta:
-        verbose_name = 'ингредиент'
-        verbose_name_plural = 'Количество ингредиентов'
+        ordering = ('name', 'recipe',)
+        verbose_name = 'ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецепте'
         constraints = (
             models.UniqueConstraint(
                 fields=(
                     'recipe',
-                    'ingredient',
+                    'name',
                 ),
                 name='unique_recipe_ingredient',
             ),
         )
 
     def __str__(self):
-        return f'{self.ingredient} - {self.amount}'
+        return f'{self.name} - {self.name.measurement_unit}'
 
 
 class FavoriteShoppingCart(models.Model):
