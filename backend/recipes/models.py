@@ -197,6 +197,7 @@ class Favorite(FavoriteShoppingCart):
     """Модель рецепт в избранном."""
 
     class Meta:
+        default_related_name = 'favorites'
         ordering = ['recipe']
         verbose_name = 'Рецепт в избранном'
         verbose_name_plural = 'Рецепты в избранном'
@@ -209,6 +210,7 @@ class ShoppingCart(FavoriteShoppingCart):
     """Модель рецепт в списке покупок."""
 
     class Meta:
+        default_related_name = 'shopping_cart'
         ordering = ['recipe']
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'

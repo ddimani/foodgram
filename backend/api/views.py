@@ -147,30 +147,32 @@ class IngredientViewSet(ListRetrieveViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    """Вьюсет рецепта."""
-
+    """Вьюсет для модели Recipe."""
     queryset = Recipe.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     pagination_class = PageLimitPagination
-    permission_classes = [IsAdminAuthorOrReadOnly]
+    permission_classes = (IsAdminAuthorOrReadOnly,)
     http_method_names = ('get', 'post', 'patch', 'delete',)
     lookup_field = 'id'
 
     def get_recipe(self):
-        return get_object_or_404(Recipe, pk=self.kwargs['pk'])
+        return get_object_or_404(Recipe, id=self.kwargs.get('id'))
 
-    def add_recipe(self, request, serializer):
+    def add_recipe_to_model(self, request, serializer):
         data = {
             'user': request.user.id,
             'recipe': self.get_recipe().id
         }
-        serializer = serializer(data=data, context={'request': request})
+        serializer = serializer(
+            data=data,
+            context={'request': request},
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def delete_recipe(self, request, model):
+    def delete_recipe_from_model(self, request, model):
         deleted_recipes, _ = model.objects.filter(
             user=request.user,
             recipe=self.get_recipe()
@@ -189,7 +191,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=('get',),
         url_path='get-link',
     )
-    def get_link(self, request):
+    def get_link(self, request, id=None):
         recipe = self.get_recipe()
         short_link = f'/{PREFIX_SHORT_LINK_RECIPE}{recipe.short_link}/'
         return Response(
@@ -201,62 +203,50 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=('post',),
     )
-    def shopping_cart(self, request):
-        return self.add_recipe(request, ShoppingCartSerializer)
+    def shopping_cart(self, request, id=None):
+        return self.add_recipe_to_model(
+            request, ShoppingCartSerializer)
 
     @shopping_cart.mapping.delete
-    def delete_recipe_from_shopping_cart(self, request):
-        return self.delete_recipe(request, ShoppingCart)
+    def delete_recipe_from_shopping_cart(self, request, id=None):
+        return self.delete_recipe_from_model(request, ShoppingCart)
 
     @action(
         detail=False,
         methods=('get',),
         permission_classes=(IsAuthenticated,)
     )
-    def download_shopping_cart(self, request):
-        """Возвращает файл со списком покупок."""
-        recipes = request.user.shopping_cart.all().values_list(
-            'recipe', flat=True
-        )
+    def download_shopping_cart(self, request, id=None):
+        shopping_cart = "Список покупок пуст!"
+        recipes = request.user.shopping_cart.all().values('recipe')
+        if recipes:
+            shopping_cart = []
+            ingredients = Ingredient.objects.filter(
+                recipes__in=recipes
+            ).values(
+                'name',
+                'ingredientrecipe__name__measurement_unit',
+            ).annotate(amount=Sum('ingredientrecipe__amount'))
 
-        if not recipes:
-            return Response(
-                {'detail': NO_CONTENT},
-                status=status.HTTP_204_NO_CONTENT
-            )
-
-        ingredients = Ingredient.objects.filter(
-            recipes__in=recipes
-        ).values(
-            'name',
-            'ingredientrecipe__measurement_unit'
-        ).annotate(amount=Sum('ingredientrecipe__amount'))
-
-        shopping_cart = [
-            f"{ing['name']} - "
-            f"{ing['amount']}"
-            f"{ing['ingredientrecipe__measurement_unit']}"
-            for ing in ingredients
-        ]
-
-        shopping_cart_text = '\n'.join(shopping_cart)
-
-        response = HttpResponse(shopping_cart_text, content_type='text/plain')
+            for ingredient in ingredients:
+                name, measurement_unit, amount = ingredient.values()
+                shopping_cart.append(f'• {name} - {amount} {measurement_unit}')
+            shopping_cart = '\n'.join(shopping_cart)
+        response = HttpResponse(shopping_cart, content_type='text/plain')
         response['Content-Disposition'] = (
             'attachment; filename="my_shopping_cart.txt"')
         return response
 
     @action(
         detail=True,
-        methods=['post'],
-        permission_classes=[IsAuthenticated]
+        methods=('post',),
     )
-    def favorite(self, request):
-        return self.add_recipe(request, FavoriteSerializer)
+    def favorite(self, request, id=None):
+        return self.add_recipe_to_model(request, FavoriteSerializer)
 
     @favorite.mapping.delete
-    def delete_recipe_from_favorite(self, request):
-        return self.delete_recipe(request, Favorite)
+    def delete_recipe_from_favorite(self, request, id=None):
+        return self.delete_recipe_from_model(request, Favorite)
 
 
 def redirect_to_recipe(request, short_link):
@@ -264,5 +254,3 @@ def redirect_to_recipe(request, short_link):
     return HttpResponseRedirect(
         request.build_absolute_uri(f'/recipes/{recipe_id}/'),
     )
-
-

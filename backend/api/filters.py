@@ -6,38 +6,34 @@ from django_filters import (
 )
 from rest_framework.filters import SearchFilter
 
+from core.constants import RECIPE_FILTER_CHOICES
 from recipes.models import Recipe
 
 
-class RecipeFilter(FilterSet):
-    """Фильтр для класса рецета."""
 
-    favorited = TypedChoiceFilter(
-        choices=((0, False), (1, True)),
-        method='filter_favorited',
-        coerce=strtobool,
-        label='В избранном'
+class RecipeFilter(FilterSet):
+    is_favorited = TypedChoiceFilter(
+        choices=RECIPE_FILTER_CHOICES,
+        method='filter_is_favorited',
+        coerce=strtobool
     )
-    shopping_cart = TypedChoiceFilter(
-        choices=((0, False), (1, True)),
-        method='filter_shopping_cart',
-        coerce=strtobool,
-        label='В списке покупок'
+    is_in_shopping_cart = TypedChoiceFilter(
+        choices=RECIPE_FILTER_CHOICES,
+        method='filter_is_in_shopping_cart',
+        coerce=strtobool
     )
-    tags = AllValuesMultipleFilter(field_name='tags__slug', label='Теги')
+    tags = AllValuesMultipleFilter(field_name='tags__slug',)
 
     class Meta:
         model = Recipe
         fields = ('author',)
 
-    def filter_favorited(self, queryset, value):
-        """Фильтр добавление в избранное."""
+    def filter_is_favorited(self, queryset, value):
         if value and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
-    def filter_shopping_cart(self, queryset, value):
-        """Фильтр добавление в список покупок."""
+    def filter_is_in_shopping_cart(self, queryset, value):
         if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_cart__user=self.request.user)
         return queryset
