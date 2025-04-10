@@ -55,7 +55,7 @@ class UserViewSet(UserViewSet):
 
     @action(
         detail=False,
-        methods=('put',),
+        methods=('PUT',),
         url_path='me/avatar',
     )
     def update_avatar(self, request):
@@ -88,7 +88,7 @@ class UserViewSet(UserViewSet):
 
     @action(
         detail=False,
-        methods=('get',),
+        methods=('GET',),
         permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
@@ -104,7 +104,7 @@ class UserViewSet(UserViewSet):
 
     @action(
         detail=True,
-        methods=('post',),
+        methods=('POST',),
     )
     def subscribe(self, request, id=None):
         subscription_data = {
@@ -188,7 +188,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=('get',),
+        methods=('GET',),
         url_path='get-link',
     )
     def get_link(self, request, id=None):
@@ -213,11 +213,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=('get',),
+        methods=('GET',),
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request, id=None):
-        shopping_cart = "Список покупок пуст!"
+        shopping_cart = NO_CONTENT
         recipes = request.user.shopping_cart.all().values('recipe')
         if recipes:
             shopping_cart = []
@@ -239,7 +239,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=('post',),
+        methods=('POST',),
     )
     def favorite(self, request, id=None):
         return self.add_recipe_to_model(request, FavoriteSerializer)

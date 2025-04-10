@@ -1,13 +1,11 @@
-from collections import Counter
-
 from django.db import transaction
-from django.db.models import F
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from core.constants import (
     ERROR_INGREDIENTS,
+    ERROR_ME_FOLLOW,
     ERROR_MESSAGE_DUBLICATE_INGREDIENTS,
     ERROR_MESSAGE_DUBLICATE_TAGS,
     ERROR_TAG,
@@ -81,7 +79,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         read_only_fields = ('name', 'measurement_unit',)
 
 
-class IngredientAmountSerializer(serializers.ModelSerializer):
+class IngredientRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для указания количества ингредиента в рецепте."""
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
@@ -160,7 +158,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         queryset=Tag.objects.all(),
     )
-    ingredients = IngredientAmountSerializer(many=True,)
+    ingredients = IngredientRecipeSerializer(many=True,)
     image = Base64ImageField()
     author = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -184,18 +182,17 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         field_errors = {}
         if not tags:
-            field_errors['tags'] = 'Добавьте хотя бы один тег!'
+            field_errors['tags'] = ERROR_TAG
         elif len(tags) != len(set(tags)):
-            field_errors['tags'] = 'Проверьте теги на дубликаты!'
+            field_errors['tags'] = ERROR_MESSAGE_DUBLICATE_TAGS
 
         if not ingredients:
-            field_errors['ingredients'] = 'Добавьте хотя бы один ингредиент!'
+            field_errors['ingredients'] = ERROR_INGREDIENTS
         else:
             ingredients_list = [
                 ingredient.get('name') for ingredient in ingredients]
             if len(ingredients_list) != len(set(ingredients_list)):
-                field_errors['ingredients'] = (
-                    'Проверьте ингредиенты на дубликаты!')
+                field_errors['ingredients'] = ERROR_MESSAGE_DUBLICATE_INGREDIENTS
 
         if field_errors:
             raise serializers.ValidationError(field_errors)
@@ -203,8 +200,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate_image(self, value):
         if not value:
-            raise serializers.ValidationError(
-                'Необходимо добавить изображение!')
+            raise serializers.ValidationError(IMAGE_ERROR)
         return value
 
     @staticmethod
@@ -245,7 +241,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         return RecipeReadSerializer(instance, context=context).data
 
 
-class RecipeShortInformation(serializers.ModelSerializer):
+class RecipeInformation(serializers.ModelSerializer):
     """Сериализатор краткой информации о рецепте."""
 
     class Meta:
@@ -264,6 +260,7 @@ class RecipeShortInformation(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализатор списка покупок."""
 
     class Meta:
         model = ShoppingCart
@@ -272,12 +269,12 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=ShoppingCart.objects.all(),
                 fields=('user', 'recipe'),
-                message='Этот рецепт уже добавлен в список покупок!'
+                message=RECIPE_ADD_ERR0R
             ),
         )
 
     def to_representation(self, instance):
-        return RecipeShortInformation(
+        return RecipeInformation(
             instance.recipe, context=self.context).data
 
 
@@ -290,17 +287,17 @@ class FavoriteSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Favorite.objects.all(),
                 fields=('user', 'recipe'),
-                message='Этот рецепт уже добавлен в избранное!'
+                message=FOLLOWING_ERROR
             ),
         )
 
     def to_representation(self, instance):
-        return RecipeShortInformation(
+        return RecipeInformation(
             instance.recipe, context=self.context).data
 
 
 class SubscriptionSerializer(UserSerializer):
-    "Сериализатор для модели Subscription."
+    """Сериализатор для подписок."""
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
@@ -323,13 +320,14 @@ class SubscriptionSerializer(UserSerializer):
                 recipes = recipes[:int(recipes_limit)]
             except ValueError:
                 pass
-        return RecipeShortInformation(recipes, many=True).data
+        return RecipeInformation(recipes, many=True).data
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj).count()
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    """Сериализатор получения списка рецептов автора."""
 
     class Meta:
         model = Subscription
@@ -344,8 +342,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def validate_following(self, value):
         if self.context.get('request').user == value:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя!')
+            raise serializers.ValidationError(ERROR_ME_FOLLOW)
         return value
 
     def to_representation(self, instance):

@@ -33,6 +33,8 @@ IMAGE_ERROR = 'Необходимо добавить изображение!'
 
 RECIPE_ADD_ERR0R = 'Этот рецепт уже добавлен в список покупок!'
 
+ERROR_ME_FOLLOW = 'Нельзя подписаться на самого себя!'
+
 FOLLOWING_ERROR = 'Такая подписка уже существует!'
 
 PREFIX_SHORT_LINK_RECIPE = 's/'
