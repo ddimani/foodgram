@@ -14,7 +14,7 @@ CORE_DIR = BASE_DIR.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-placeholder')
 
 
-DEBUG = os.getenv('DEBUG', 'False') == 'False'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 BD_IS_SQLITE = os.getenv('BD_IS_SQLITE', 'False') == 'True'
 
@@ -23,7 +23,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://foodgrame.duckdns.org',
+    'https://foodgrame.duckdns.org'
 ]
 
 
