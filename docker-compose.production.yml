@@ -17,22 +17,21 @@ services:
     depends_on:
       - db
     volumes:
-      - static_volume:/static
+      - static_volume:/backend_static
       - media_volume:/media
   frontend:
     image: ddimani/foodgram_frontend
     env_file: .env
-    command: cp -r /app/build/. /static/
+    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static_volume:/static
+      - static_volume:/frontend_static
   gateway:
     image: ddimani/foodgram_gateway
     depends_on:
       - backend
-      - frontend
     env_file: .env
     ports:
       - 8000:80
     volumes:
-      - static_volume:/static
+      - static_volume:/staticfiles
       - media_volume:/media
