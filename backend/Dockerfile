@@ -1,11 +1,9 @@
-FROM python:3.11-slim
-RUN apt-get update &&\
-    apt-get upgrade -y &&\
-    apt-get install -y libpq-dev gcc netcat-traditional
+FROM python:3.10-slim
 WORKDIR /app
+RUN pip install gunicorn==20.1.0
 COPY requirements.txt ./
 RUN pip install -U pip &&\
     pip install -r requirements.txt --no-cache-dir
 COPY . .
-RUN chmod +x run_app.sh
+#RUN chmod +x run_app.sh
 ENTRYPOINT ["/app/run_app.sh"]
