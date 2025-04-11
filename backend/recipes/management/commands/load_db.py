@@ -4,7 +4,7 @@ import os
 from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import IntegrityError
 
-from foodgram_backend.settings import CORE_DIR
+from foodgram_backend.settings import BASE_DIR
 from recipes.models import Ingredient
 
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         try:
             with open(
                 os.path.join(
-                    CORE_DIR,
+                    BASE_DIR,
                     'data/ingredients.json'
                 ),
                 'r',
