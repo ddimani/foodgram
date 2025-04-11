@@ -14,8 +14,6 @@ services:
   backend:
     build: ./backend/
     env_file: .env
-    expose:
-      - "8000"
     depends_on:
       - db
     volumes:
@@ -25,8 +23,6 @@ services:
   frontend:
     build: ./frontend/
     env_file: .env
-    expose:
-      - "8000"
     command: cp -r /app/build/. /frontend_static/
     volumes:
       - static:/frontend_static
