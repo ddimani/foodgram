@@ -13,7 +13,6 @@ CORE_DIR = BASE_DIR.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-placeholder')
 
-
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 BD_IS_SQLITE = os.getenv('BD_IS_SQLITE', 'False') == 'True'
