@@ -14,11 +14,11 @@ services:
   backend:
     image: ddimani/foodgram_backend
     env_file: .env
-    depends_on:
-      - db
     volumes:
       - static_volume:/backend_static
       - media_volume:/media
+    depends_on:
+      - db
   frontend:
     image: ddimani/foodgram_frontend
     env_file: .env
@@ -27,11 +27,11 @@ services:
       - static_volume:/frontend_static
   gateway:
     image: ddimani/foodgram_gateway
-    depends_on:
-      - backend
     env_file: .env
     ports:
       - 8000:80
     volumes:
       - static_volume:/staticfiles
       - media_volume:/media
+    depends_on:
+      - backend
