@@ -230,11 +230,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.is_valid(raise_exception=True)
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
+        new_image = validated_data.get('image')
+        if new_image and instance.image and instance.image != new_image:
+            instance.image.delete(save=False)
         instance.tags.clear()
         instance.ingredients.clear()
         self.add_tags_and_ingredients_to_recipe(instance, tags, ingredients)
-        super().update(instance, validated_data)
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         context = {'request': self.context.get('request')}
