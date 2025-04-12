@@ -226,15 +226,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ).values(
                 'name',
                 'ingredientrecipe__name__measurement_unit',
-            ).annotate(amount=Sum('ingredientrecipe__amount')
-            )
+            ).annotate(amount=Sum('ingredientrecipe__amount'))
             for ingredient in ingredients:
                 name = ingredient['name']
-                measurement_unit = ingredient[
+                measurement_un = ingredient[
                     'ingredientrecipe__name__measurement_unit'
                 ]
                 amount = ingredient['amount']
-                shopping_cart.append(f'• {name} ({measurement_unit}) — {amount}')
+                shopping_cart.append(f'• {name} ({measurement_un}) — {amount}')
             shopping_cart = '\n'.join(shopping_cart)
         response = HttpResponse(shopping_cart, content_type='text/plain')
         response['Content-Disposition'] = (
