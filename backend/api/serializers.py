@@ -230,10 +230,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.is_valid(raise_exception=True)
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        new_image = validated_data.get('image')
+        new_image = validated_data.get('image', None)
         if new_image and instance.image and instance.image != new_image:
             instance.image.delete(save=False)
-            instance.image = new_image
         instance.tags.clear()
         instance.ingredients.clear()
         self.add_tags_and_ingredients_to_recipe(instance, tags, ingredients)
