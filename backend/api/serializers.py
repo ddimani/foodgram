@@ -233,6 +233,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         new_image = validated_data.get('image')
         if new_image and instance.image and instance.image != new_image:
             instance.image.delete(save=False)
+            instance.image = new_image
         instance.tags.clear()
         instance.ingredients.clear()
         self.add_tags_and_ingredients_to_recipe(instance, tags, ingredients)
