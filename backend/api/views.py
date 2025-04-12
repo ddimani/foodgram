@@ -1,12 +1,14 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, \
+    HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
 
 
 from api.filters import IngredientFilter, RecipeFilter
@@ -34,6 +36,9 @@ from recipes.models import (
     Tag,
 )
 from users.models import Subscription, User
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(UserViewSet):
@@ -217,27 +222,32 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request, id=None):
         shopping_cart = NO_CONTENT
-        recipes = request.user.shopping_cart.all().values('recipe')
-        if recipes:
-            shopping_cart = []
-            ingredients = Ingredient.objects.filter(
-                recipes__in=recipes
-            ).values(
-                'name',
-                'ingredientrecipe__name__measurement_unit',
-            ).annotate(amount=Sum('ingredientrecipe__amount'))
-            for ingredient in ingredients:
-                name = ingredient['name']
-                measurement_un = ingredient[
-                    'ingredientrecipe__name__measurement_unit'
-                ]
-                amount = ingredient['amount']
-                shopping_cart.append(f'• {name} ({measurement_un}) — {amount}')
-            shopping_cart = '\n'.join(shopping_cart)
-        response = HttpResponse(shopping_cart, content_type='text/plain')
-        response['Content-Disposition'] = (
-            'attachment; filename="my_shopping_cart.txt"')
-        return response
+        try:
+            recipes = request.user.shopping_cart.all().values('recipe')
+            if recipes:
+                shopping_cart = []
+                ingredients = Ingredient.objects.filter(
+                    recipes__in=recipes
+                ).values(
+                    'name',
+                    'ingredientrecipe__name__measurement_unit',
+                ).annotate(amount=Sum('ingredientrecipe__amount'))
+                for ingredient in ingredients:
+                    name = ingredient['name']
+                    measurement_un = ingredient[
+                        'ingredientrecipe__name__measurement_unit'
+                    ]
+                    amount = ingredient['amount']
+                    shopping_cart.append(
+                        f'• {name} ({measurement_un}) — {amount}')
+                shopping_cart = '\n'.join(shopping_cart)
+            response = HttpResponse(shopping_cart, content_type='text/plain')
+            response['Content-Disposition'] = (
+                'attachment; filename="my_shopping_cart.txt"')
+            return response
+        except Exception as e:
+            logger.error(f"Error in download_shopping_cart: {str(e)}")
+            return HttpResponseServerError("Internal Server Error")
 
     @action(
         detail=True,
