@@ -91,17 +91,6 @@ class UserViewSet(UserViewSet):
         methods=('GET',),
         permission_classes=(IsAuthenticated,)
     )
-    def subscriptions(self, request):
-        followings = User.objects.filter(
-            followings__user=request.user).prefetch_related('recipes')
-        pages = self.paginate_queryset(followings)
-        serializer = SubscriptionSerializer(
-            pages,
-            context={'request': request},
-            many=True
-        )
-        return self.get_paginated_response(serializer.data)
-
     @action(
         detail=True,
         methods=('POST',),
