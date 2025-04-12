@@ -10,7 +10,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
-
 from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import ListRetrieveViewSet
 from api.pagination import PageLimitPagination
