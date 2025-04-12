@@ -32,12 +32,12 @@ EMPTY_VALUE_ADMIN_PANEL = '-empty-'
 ERROR_TAG = 'Добавьте хотя бы один тег!'
 ERROR_MESSAGE_DUBLICATE_TAGS = (
     'Проверьте теги на дубликаты! Найдены дубликаты: '
-                  '{dublicates}'
+    '{dublicates}'
 )
 ERROR_INGREDIENTS = 'Добавьте хотя бы один ингредиент!'
 ERROR_MESSAGE_DUBLICATE_INGRED = (
     'Проверьте ингредиенты на дубликаты! Найдены дубликаты: '
-                  '{dublicates}'
+    '{dublicates}'
 )
 
 IMAGE_ERROR = 'Необходимо добавить изображение!'
