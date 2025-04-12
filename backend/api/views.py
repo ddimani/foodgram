@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 
@@ -135,6 +135,7 @@ class TagViewSet(ListRetrieveViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (AllowAny,)
 
 
 class IngredientViewSet(ListRetrieveViewSet):
@@ -142,6 +143,7 @@ class IngredientViewSet(ListRetrieveViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    permission_classes = (AllowAny,)
     filter_backends = (IngredientFilter,)
     search_fields = ('^name',)
 
