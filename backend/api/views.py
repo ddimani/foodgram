@@ -195,6 +195,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_recipe()
         short_link = f'/{PREFIX_SHORT_LINK_RECIPE}{recipe.short_link}/'
         full_url = request.build_absolute_uri(short_link)
+        if not full_url.startswith('http'):
+            full_url = f'{request.scheme}://{request.get_host()}{short_link}'
         return Response(
             {'short-link': full_url}, status=status.HTTP_200_OK)
 
