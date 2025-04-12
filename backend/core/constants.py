@@ -13,21 +13,32 @@ SHORT_LINK_MAX_LENGTH = 16
 MAX_ATTEMPTS = 10
 MIN_AMOUNT_INGREDIENTS = 1
 MAX_AMOUNT_INGREDIENTS = 32000
-MSG_FO_MIN_INGREDIENTS = f'Значение не может быть меньше {MIN_AMOUNT_INGREDIENTS}!'
-MSG_FO_MAX_INGREDIENTS = f'Значение не может быть больше {MAX_AMOUNT_INGREDIENTS}!'
+MSG_FO_MIN_INGREDIENTS = (
+    f'Значение не может быть меньше {MIN_AMOUNT_INGREDIENTS}!'
+)
+MSG_FO_MAX_INGREDIENTS = (
+    f'Значение не может быть больше {MAX_AMOUNT_INGREDIENTS}!'
+)
 
 REGEX = r'^[\w.@+-]+\Z'
-MSG_FO_USERNAME='Введите корректное имя пользователя. Разрешены только буквы, цифры и символы @/./+/-/_.'
+MSG_FO_USERNAME = (
+    'Введите корректное имя пользователя.'
+    'Разрешены только буквы, цифры и символы @/./+/-/_.'
+)
 CODE_FO_USERNAME = 'invalid_username'
 
 EMPTY_VALUE_ADMIN_PANEL = '-empty-'
 
 ERROR_TAG = 'Добавьте хотя бы один тег!'
-ERROR_MESSAGE_DUBLICATE_TAGS = ('Проверьте теги на дубликаты! Найдены дубликаты: '
-                  '{dublicates}')
+ERROR_MESSAGE_DUBLICATE_TAGS = (
+    'Проверьте теги на дубликаты! Найдены дубликаты: '
+                  '{dublicates}'
+)
 ERROR_INGREDIENTS = 'Добавьте хотя бы один ингредиент!'
-ERROR_MESSAGE_DUBLICATE_INGRED = ('Проверьте ингредиенты на дубликаты! Найдены дубликаты: '
-                  '{dublicates}')
+ERROR_MESSAGE_DUBLICATE_INGRED = (
+    'Проверьте ингредиенты на дубликаты! Найдены дубликаты: '
+                  '{dublicates}'
+)
 
 IMAGE_ERROR = 'Необходимо добавить изображение!'
 
