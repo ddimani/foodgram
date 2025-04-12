@@ -54,7 +54,6 @@ NO_CONTENT = 'Список покупок пуст!'
 
 PAGE_SIZE = 6
 
-
 RECIPE_FILTER_CHOICES = (
     (0, False),
     (1, True)
