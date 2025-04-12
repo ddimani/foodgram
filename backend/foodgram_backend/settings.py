@@ -19,6 +19,8 @@ BD_IS_SQLITE = os.getenv('BD_IS_SQLITE', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
     'https://localhost:8000',
     'https://127.0.0.1:8000',
