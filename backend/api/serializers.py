@@ -103,7 +103,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра рецептов."""
     tags = TagSerializer(many=True, )
     author = UserSerializer()
-    ingredients = serializers.SerializerMethodField()
+    ingredients = IngredientRecipeSerializer(
+        source='ingredient_recipes',
+        many=True
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
@@ -122,13 +125,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
-        read_only_fields = (
-            'author',
-            'name',
-            'image',
-            'text',
-            'cooking_time',
-        )
 
     def check_recipe_in_model(self, obj, model):
         request = self.context.get('request')
@@ -140,18 +136,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
                 recipe=obj
             ).exists()
         )
-
-    def get_ingredients(self, obj):
-        ingredient_recipes = IngredientRecipe.objects.filter(recipe=obj)
-        ingredients_data = []
-        for ingredient_recipe in ingredient_recipes:
-            ingredients_data.append({
-                'id': ingredient_recipe.name.id,
-                'name': ingredient_recipe.name.name,
-                'measurement_unit': ingredient_recipe.name.measurement_unit,
-                'amount': ingredient_recipe.amount,
-            })
-        return ingredients_data
 
     def get_is_favorited(self, obj):
         return self.check_recipe_in_model(obj, Favorite)
