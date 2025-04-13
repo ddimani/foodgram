@@ -109,10 +109,11 @@ class Recipe(models.Model):
         Ingredient,
         through='IngredientRecipe',
         verbose_name='Ингридиенты',
+        related_name='ingredient_recipes'
     )
 
     class Meta:
-        default_related_name = 'recipes'
+        default_related_name = 'recipe'
         ordering = ('-pub_date', 'name')
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
