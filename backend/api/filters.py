@@ -1,13 +1,13 @@
 from distutils.util import strtobool
 from django_filters import (
-    AllValuesMultipleFilter,
+    ModelMultipleChoiceFilter,
     FilterSet,
     TypedChoiceFilter,
 )
 from rest_framework.filters import SearchFilter
 
 from core.constants import RECIPE_FILTER_CHOICES
-from recipes.models import Recipe
+from recipes.models import Recipe, Tag
 
 
 class RecipeFilter(FilterSet):
@@ -21,7 +21,11 @@ class RecipeFilter(FilterSet):
         method='filter_is_in_shopping_cart',
         coerce=strtobool
     )
-    tags = AllValuesMultipleFilter(field_name='tags__slug', )
+    tags = ModelMultipleChoiceFilter(
+        field_name='tags',
+        queryset=Tag.objects.all(),
+        to_field_name='slug'
+    )
 
     class Meta:
         model = Recipe
