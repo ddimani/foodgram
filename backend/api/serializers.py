@@ -278,30 +278,34 @@ class ShoppingFavoriteSerializer(serializers.ModelSerializer):
         return RecipeInformation(
             instance.recipe, context=self.context).data
 
+    @staticmethod
+    def get_unique_together_validator(model, message_error):
+        return UniqueTogetherValidator(
+            queryset=model.objects.all(),
+            fields=('user', 'recipe'),
+            message=message_error
+        )
+
 
 class ShoppingCartSerializer(ShoppingFavoriteSerializer):
     """Сериализатор списка покупок."""
 
-    class Meta:
+    class Meta(ShoppingFavoriteSerializer.Meta):
         model = ShoppingCart
         validators = (
-            UniqueTogetherValidator(
-                queryset=ShoppingCart.objects.all(),
-                fields=('user', 'recipe'),
-                message=RECIPE_ADD_ERR0R
+            ShoppingFavoriteSerializer.get_unique_together_validator(
+                ShoppingCart, RECIPE_ADD_ERR0R
             ),
         )
 
 
 class FavoriteSerializer(ShoppingFavoriteSerializer):
 
-    class Meta:
+    class Meta(ShoppingFavoriteSerializer.Meta):
         model = Favorite
         validators = (
-            UniqueTogetherValidator(
-                queryset=Favorite.objects.all(),
-                fields=('user', 'recipe'),
-                message=FOLLOWING_ERROR
+            ShoppingFavoriteSerializer.get_unique_together_validator(
+                Favorite, FOLLOWING_ERROR
             ),
         )
 
