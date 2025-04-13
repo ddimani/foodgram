@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 from core.constants import EMAIL_MAX_LENGTH, USERNAME_MAX_LENGTH
@@ -23,7 +24,7 @@ class User(AbstractUser):
         unique=True,
         verbose_name='Никнейм',
         help_text='Введите ваш никнейм',
-        validators=[validator_username]
+        validators=(UnicodeUsernameValidator(), validator_username)
     )
     email = models.EmailField(
         max_length=EMAIL_MAX_LENGTH,
@@ -35,7 +36,8 @@ class User(AbstractUser):
         upload_to='users/',
         verbose_name='Аватар',
         blank=True,
-        null=True
+        null=True,
+        default=''
     )
 
     USERNAME_FIELD = 'email'

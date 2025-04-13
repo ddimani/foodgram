@@ -99,22 +99,20 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги',
-        related_name='recipes'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
-        related_name='recipes'
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientRecipe',
         verbose_name='Ингридиенты',
-        related_name='recipes'
     )
 
     class Meta:
+        default_related_name = 'recipes'
         ordering = ('-pub_date', 'name')
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -144,7 +142,7 @@ class Recipe(models.Model):
 class IngredientRecipe(models.Model):
     """Модель ингредиент в рецепте."""
 
-    name = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
@@ -162,21 +160,21 @@ class IngredientRecipe(models.Model):
     )
 
     class Meta:
-        ordering = ('name', 'recipe',)
+        ordering = ('ingredient', 'recipe',)
         verbose_name = 'ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
         constraints = (
             models.UniqueConstraint(
                 fields=(
                     'recipe',
-                    'name',
+                    'ingredient',
                 ),
                 name='unique_recipe_ingredient',
             ),
         )
 
     def __str__(self):
-        return f'{self.name} - {self.name.measurement_unit}'
+        return f'{self.ingredient} - {self.ingredient.measurement_unit}'
 
 
 class FavoriteShoppingCart(models.Model):
@@ -193,6 +191,12 @@ class FavoriteShoppingCart(models.Model):
 
     class Meta:
         abstract = True
+        constraints = (
+            models.UniqueConstraint(
+                fields=('recipe', 'user',),
+                name='unique_recipe_user_in_cart',
+            ),
+        )
 
 
 class Favorite(FavoriteShoppingCart):
@@ -203,6 +207,7 @@ class Favorite(FavoriteShoppingCart):
         ordering = ['recipe']
         verbose_name = 'Рецепт в избранном'
         verbose_name_plural = 'Рецепты в избранном'
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
         return f'{self.recipe.name} в избранном {self.user.username}'
@@ -216,15 +221,6 @@ class ShoppingCart(FavoriteShoppingCart):
         ordering = ['recipe']
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
-        constraints = (
-            models.UniqueConstraint(
-                fields=(
-                    'recipe',
-                    'user',
-                ),
-                name='unique_recipe_user_in_cart',
-            ),
-        )
 
     def __str__(self):
         return (

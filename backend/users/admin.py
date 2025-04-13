@@ -13,7 +13,8 @@ class UserAdmin(admin.ModelAdmin):
         'username',
         'first_name',
         'last_name',
-        'avatar'
+        'avatar',
+        'recipe_count'
     )
     list_editable = (
         'email',
@@ -23,6 +24,11 @@ class UserAdmin(admin.ModelAdmin):
         'avatar'
     )
     search_fields = ('email', 'username',)
+
+    def recipe_count(self, obj):
+        return obj.recipes.count()
+
+    recipe_count.short_description = 'Количество рецептов'
 
 
 @admin.register(Subscription)
