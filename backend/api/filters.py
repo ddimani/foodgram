@@ -46,4 +46,3 @@ class IngredientFilter(SearchFilter):
     """Фильтр для класса ингредиента."""
 
     search_param = 'name'
-    
