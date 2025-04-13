@@ -83,31 +83,19 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для указания количества ингредиента в рецепте."""
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
-        source='ingredient',
-        write_only=True
-    )
-    name = serializers.CharField(
-        source='ingredient.name',
-        read_only=True
-    )
-    measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit',
-        read_only=True
+        source='name'
     )
 
     class Meta:
         model = IngredientRecipe
-        fields = ('id', 'name', 'measurement_unit', 'amount',)
+        fields = ('id', 'amount',)
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра рецептов."""
-    tags = TagSerializer(many=True,)
+    tags = TagSerializer(many=True, )
     author = UserSerializer()
-    ingredients = IngredientRecipeSerializer(
-        source='ingredient_recipes',
-        many=True
-    )
+    ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
@@ -126,6 +114,13 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
+        read_only_fields = (
+            'author',
+            'name',
+            'image',
+            'text',
+            'cooking_time',
+        )
 
     def check_recipe_in_model(self, obj, model):
         request = self.context.get('request')
@@ -137,6 +132,18 @@ class RecipeReadSerializer(serializers.ModelSerializer):
                 recipe=obj
             ).exists()
         )
+
+    def get_ingredients(self, obj):
+        ingredient_recipes = IngredientRecipe.objects.filter(recipe=obj)
+        ingredients_data = []
+        for ingredient_recipe in ingredient_recipes:
+            ingredients_data.append({
+                'id': ingredient_recipe.name.id,
+                'name': ingredient_recipe.name.name,
+                'measurement_unit': ingredient_recipe.name.measurement_unit,
+                'amount': ingredient_recipe.amount,
+            })
+        return ingredients_data
 
     def get_is_favorited(self, obj):
         return self.check_recipe_in_model(obj, Favorite)
@@ -151,7 +158,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         queryset=Tag.objects.all(),
     )
-    ingredients = IngredientRecipeSerializer(many=True,)
+    ingredients = IngredientRecipeSerializer(many=True, )
     image = Base64ImageField()
     author = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -202,7 +209,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         all_ingredients = []
         for ingredient in ingredients:
             ingredient_in_recipe = IngredientRecipe(
-                name=ingredient.get('ingredient'),
+                name=ingredient.get('name'),
                 recipe=recipe,
                 amount=ingredient.get('amount')
             )

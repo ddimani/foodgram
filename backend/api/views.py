@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count, Sum
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
@@ -7,7 +7,6 @@ from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.mixins import ListRetrieveViewSet
@@ -75,10 +74,8 @@ class UserViewSet(UserViewSet):
         permission_classes=[IsAuthenticated],
     )
     def subscriptions(self, request):
-        followings = (User.objects.filter(followings__user=request.user)
-                      .prefetch_related('recipes').
-                      annotate(recipes_count=Count('recipes'))
-                      )
+        followings = User.objects.filter(
+            followings__user=request.user).prefetch_related('recipes')
         pages = self.paginate_queryset(followings)
         serializer = SubscriptionSerializer(
             pages, context={'request': request}, many=True

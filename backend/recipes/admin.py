@@ -57,8 +57,8 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientRecipeAdmin(admin.ModelAdmin):
     """Админ панель для модели ингредиент в рецепте."""
 
-    list_display = ('id', 'ingredient', 'recipe', 'amount')
-    list_editable = ('ingredient', 'recipe', 'amount')
+    list_display = ('id', 'name', 'recipe', 'amount')
+    list_editable = ('name', 'recipe', 'amount')
 
 
 @admin.register(Favorite)
@@ -71,7 +71,6 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
-
     """Админ панель для модели рецепт в списке покупок."""
     list_display = ('id', 'user', 'recipe')
     list_editable = ('user', 'recipe')
