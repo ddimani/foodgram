@@ -192,6 +192,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=('post',),
+        permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, id=None):
         return self.add_recipe_to_model(
@@ -234,6 +235,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=('POST',),
+        permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, id=None):
         return self.add_recipe_to_model(request, FavoriteSerializer)
