@@ -42,7 +42,6 @@ def validator_amount(value):
     except ValidationError as e:
         raise e
 
-
 def validator_username(value):
     """Валидатор для проверки имени пользователя."""
     validator = RegexValidator(
