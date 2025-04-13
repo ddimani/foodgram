@@ -99,22 +99,20 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги',
-        related_name='recipes'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
-        related_name='recipes'
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientRecipe',
         verbose_name='Ингридиенты',
-        related_name='recipes'
     )
 
     class Meta:
+        default_related_name = 'recipes'
         ordering = ('-pub_date', 'name')
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
