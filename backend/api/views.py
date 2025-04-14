@@ -207,11 +207,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request, id=None):
         shopping_cart = NO_CONTENT
-        recipes = request.user.ShoppingCart_user.all().values('recipe')
-        if recipes:
+        recip = ShoppingCart.objects.filter(user=request.user).values('recipe')
+        if recip:
             shopping_cart = []
             ingredients = Ingredient.objects.filter(
-                recipes__in=recipes
+                recipes__in=recip
             ).values(
                 'name',
                 'ingredient_recipe__name__measurement_unit',
