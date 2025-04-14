@@ -2,9 +2,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, viewsets
-from django.utils.decorators import method_decorator
+# from django.utils.decorators import method_decorator
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -91,16 +91,11 @@ class UserViewSet(UserViewSet):
         return get_object_or_404(User, id=self.kwargs.get('id'))
 
     @action(
-        detail=False,
-        methods=('GET',),
-        permission_classes=(IsAuthenticated,)
-    )
-    @action(
         detail=True,
         methods=('POST',),
-
+        permission_classes=(IsAuthenticated,)
     )
-    @method_decorator(csrf_exempt, name='dispatch')
+    # @method_decorator(csrf_exempt, name='dispatch')
     def subscribe(self, request, id=None):
         subscription_data = {
             'user': request.user.id,
