@@ -77,7 +77,7 @@ class UserViewSet(UserViewSet):
         followings = (
             User.objects.filter(followings__user=request.user)
             .prefetch_related('recipes')
-        .annotate(recipes_count=Count('recipes'))
+            .annotate(recipes_count=Count('recipes'))
         )
         pages = self.paginate_queryset(followings)
         serializer = SubscriptionSerializer(
