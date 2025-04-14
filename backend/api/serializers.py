@@ -87,6 +87,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     )
     name = serializers.CharField(
         source='name.name',
+        # нейм нейм странно
         read_only=True
     )
     measurement_unit = serializers.CharField(
@@ -105,6 +106,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     author = UserSerializer()
     ingredients = IngredientRecipeSerializer(
         source='ingredient_recipe',
+        # Изменить в модели IngredientRecipe
         many=True
     )
     is_favorited = serializers.SerializerMethodField()
@@ -299,7 +301,7 @@ class SubscriptionSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count',)
+        fields = UserSerializer.Meta.fields + ('recipes',)
         read_only_fields = (
             'email',
             'username',
@@ -318,9 +320,6 @@ class SubscriptionSerializer(UserSerializer):
             except ValueError:
                 pass
         return RecipeInformation(recipes, many=True).data
-
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
 
 
 class FollowSerializer(serializers.ModelSerializer):
