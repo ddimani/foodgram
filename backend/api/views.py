@@ -207,25 +207,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request, id=None):
         shopping_cart = NO_CONTENT
-        recipes = request.user.shopping_cart.all().values('recipe')
-        if recipes:
-            shopping_cart = []
+        shopping_cart_items = request.user.shopping_cart_recipes.all()
+
+        if shopping_cart_items.exists():
+            recipe_ids = shopping_cart_items.values_list('recipe_id', flat=True)
+
             ingredients = Ingredient.objects.filter(
-                recipes__in=recipes
+                ingredient_recipes__recipe_id__in=recipe_ids
             ).values(
                 'name',
-                'ingredient_recipe__name__measurement_unit',
-            ).annotate(amount=Sum('ingredient_recipe__amount'))
-            for ingredient in ingredients:
-                name = ingredient['name']
-                measurement_un = ingredient[
-                    'ingredient_recipe__name__measurement_unit'
-                ]
-                amount = ingredient['amount']
-                shopping_cart.append(
-                    f'• {name} ({measurement_un}) — {amount}')
+                'measurement_unit'
+            ).annotate(amount=Sum('ingredient_recipes__amount'))
+            shopping_cart = [
+                f"• {item['name']} ({item['measurement_unit']}) — {item['amount']}"
+                for item in ingredients
+            ]
             shopping_cart = '\n'.join(shopping_cart)
-        response = HttpResponse(shopping_cart, content_type='text/plain')
+        else:
+            shopping_cart = 'Ваш список покупок пуст.'
+
+        response = HttpResponse(shopping_cart, content_type='text/plain; charset=utf-8')
         response['Content-Disposition'] = (
             'attachment; filename="my_shopping_cart.txt"')
         return response
