@@ -183,12 +183,12 @@ class FavoriteShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="%(class)s_user",
+        related_name='%(class)s_user',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name="%(class)s_user",
+        related_name='%(class)s_recipe',
     )
 
     class Meta:
@@ -207,7 +207,6 @@ class Favorite(FavoriteShoppingCart):
 
     class Meta:
         abstract = False
-        default_related_name = 'favorites'
         verbose_name = 'Рецепт в избранном'
         verbose_name_plural = 'Рецепты в избранном'
 
@@ -220,7 +219,6 @@ class ShoppingCart(FavoriteShoppingCart):
 
     class Meta:
         abstract = False
-        default_related_name = 'shopping_cart'
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списке покупок'
 
