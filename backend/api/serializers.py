@@ -83,14 +83,14 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для указания количества ингредиента в рецепте."""
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
-        source='ingredient'
+        source='name'
     )
     name = serializers.CharField(
-        source='ingredient.name',
+        source='name.name',
         read_only=True
     )
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit',
+        source='name.measurement_unit',
         read_only=True
     )
 
@@ -105,7 +105,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     author = UserSerializer()
     ingredients = IngredientRecipeSerializer(
         source='ingredient_recipe',
-        # Изменить в модели IngredientRecipe
         many=True
     )
     is_favorited = serializers.SerializerMethodField()
@@ -202,7 +201,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         all_ingredients = []
         for ingredient in ingredients:
             ingredient_in_recipe = IngredientRecipe(
-                name=ingredient.get('ingredient'),
+                name=ingredient.get('name'),
                 recipe=recipe,
                 amount=ingredient.get('amount')
             )
