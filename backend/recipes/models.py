@@ -142,11 +142,11 @@ class Recipe(models.Model):
 class IngredientRecipe(models.Model):
     """Модель ингредиент в рецепте."""
 
-    name = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
-        related_name='ingredient_recipe'
+        related_name='ingredient'
     )
     recipe = models.ForeignKey(
         Recipe,
@@ -160,21 +160,21 @@ class IngredientRecipe(models.Model):
     )
 
     class Meta:
-        ordering = ('name', 'recipe',)
+        ordering = ('ingredient', 'recipe',)
         verbose_name = 'ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
         constraints = (
             models.UniqueConstraint(
                 fields=(
                     'recipe',
-                    'name',
+                    'ingredient',
                 ),
                 name='unique_recipe_ingredient',
             ),
         )
 
     def __str__(self):
-        return f'{self.name} - {self.name.measurement_unit}'
+        return f'{self.ingredient} - {self.ingredient.measurement_unit}'
 
 
 class FavoriteShoppingCart(models.Model):

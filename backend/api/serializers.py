@@ -83,15 +83,14 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для указания количества ингредиента в рецепте."""
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
-        source='name'
+        source='ingredient'
     )
     name = serializers.CharField(
-        source='name.name',
-        # нейм нейм странно
+        source='ingredient.name',
         read_only=True
     )
     measurement_unit = serializers.CharField(
-        source='name.measurement_unit',
+        source='ingredient.measurement_unit',
         read_only=True
     )
 
