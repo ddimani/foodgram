@@ -202,7 +202,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         all_ingredients = []
         for ingredient in ingredients:
             ingredient_in_recipe = IngredientRecipe(
-                name=ingredient.get('name'),
+                name=ingredient.get('ingredient'),
                 recipe=recipe,
                 amount=ingredient.get('amount')
             )
